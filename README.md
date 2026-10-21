@@ -29,8 +29,8 @@ Docker is the independent hosting path. It does not depend on ChatGPT access.
 cp .env.example .env
 # Edit .env and set AUTH_SECRET, AUTH_URL, and your Google/email settings.
 docker compose up -d --build
-docker compose exec app npx prisma db push
-docker compose exec app npm run db:seed
+docker compose --profile tools --env-file .env run --rm migrate
+docker compose --profile tools --env-file .env run --rm migrate npx tsx prisma/seed.ts
 ```
 
 Open `http://localhost:3000`. Manage the service with `docker compose ps`, `docker compose logs -f app`, `docker compose restart app`, and `docker compose down`.
