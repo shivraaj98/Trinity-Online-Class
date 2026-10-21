@@ -4,3 +4,4 @@ node_modules/
 .env.local
 *.log
 trinity-classes-site.tar.gz
+.worktrees/
