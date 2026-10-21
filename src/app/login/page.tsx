@@ -1,0 +1,6 @@
+"use client";
+import Link from "next/link";
+import { FormEvent, useState } from "react";
+import { signIn } from "next-auth/react";
+
+export default function LoginPage() { const [error, setError] = useState(""); const submit = async (event: FormEvent<HTMLFormElement>) => { event.preventDefault(); setError(""); const data = new FormData(event.currentTarget); const result = await signIn("credentials", { email: data.get("email"), password: data.get("password"), redirect: false }); if (result?.error) setError("The email or password was not recognised."); else window.location.href = "/dashboard"; }; return <main className="auth-page"><Link href="/" className="brand"><span className="brand-mark">T</span><span>Trinity <em>Classes</em></span></Link><form className="auth-card" onSubmit={submit}><p className="eyebrow">WELCOME BACK</p><h1>Keep your<br /><i>momentum.</i></h1><label>Email<input name="email" type="email" required autoComplete="email" /></label><label>Password<input name="password" type="password" required autoComplete="current-password" /></label>{error && <p className="error-message">{error}</p>}<button className="button button-coral" type="submit">Sign in <span>↗</span></button><p className="auth-foot">New to Trinity? <Link href="/">Explore classes</Link></p></form></main>; }

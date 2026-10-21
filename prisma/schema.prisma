@@ -1,0 +1,167 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  STUDENT
+  TEACHER
+  ADMIN
+  SUPPORT
+}
+
+enum CourseStatus {
+  DRAFT
+  REVIEW
+  PUBLISHED
+  ARCHIVED
+}
+
+enum EnrollmentStatus {
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum LessonType {
+  VIDEO
+  LIVE
+  READING
+  QUIZ
+}
+
+model User {
+  id            String         @id @default(cuid())
+  name          String?
+  email         String         @unique
+  passwordHash  String?
+  image         String?
+  role          Role           @default(STUDENT)
+  isActive      Boolean        @default(true)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  courses       Course[]       @relation("TeacherCourses")
+  enrollments   Enrollment[]
+  progress      LessonProgress[]
+  accounts      Account[]
+  sessions      Session[]
+  auditEvents   AuditEvent[]   @relation("ActorEvents")
+  notifications Notification[]
+}
+
+model Account {
+  userId String
+  type String
+  provider String
+  providerAccountId String
+  refresh_token String? @db.Text
+  access_token String? @db.Text
+  expires_at Int?
+  token_type String?
+  scope String?
+  id_token String? @db.Text
+  session_state String?
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@id([provider, providerAccountId])
+}
+
+model Session {
+  sessionToken String @unique
+  userId String
+  expires DateTime
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token String @unique
+  expires DateTime
+  @@unique([identifier, token])
+}
+
+model Course {
+  id          String       @id @default(cuid())
+  title       String
+  slug        String       @unique
+  description String       @db.Text
+  category    String
+  level       String
+  thumbnail   String?
+  status      CourseStatus @default(DRAFT)
+  publishedAt DateTime?
+  teacherId   String
+  teacher     User         @relation("TeacherCourses", fields: [teacherId], references: [id])
+  lessons     Lesson[]
+  enrollments Enrollment[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  @@index([status, category])
+  @@index([teacherId, status])
+}
+
+model Lesson {
+  id          String       @id @default(cuid())
+  title       String
+  description String?      @db.Text
+  type        LessonType   @default(VIDEO)
+  position    Int
+  durationMin Int?
+  videoUrl    String?
+  courseId    String
+  course      Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  progress    LessonProgress[]
+  @@unique([courseId, position])
+}
+
+model Enrollment {
+  id        String           @id @default(cuid())
+  status    EnrollmentStatus @default(ACTIVE)
+  userId    String
+  courseId  String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course    Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  createdAt DateTime         @default(now())
+  @@unique([userId, courseId])
+  @@index([userId, status])
+}
+
+model LessonProgress {
+  id          String   @id @default(cuid())
+  completed   Boolean  @default(false)
+  watchedSec  Int      @default(0)
+  userId      String
+  lessonId    String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson      Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  updatedAt   DateTime @updatedAt
+  @@unique([userId, lessonId])
+}
+
+model AuditEvent {
+  id        String   @id @default(cuid())
+  action    String
+  resource  String
+  resourceId String?
+  metadata  Json?
+  ipHash    String?
+  actorId   String?
+  actor     User?    @relation("ActorEvents", fields: [actorId], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now())
+  @@index([actorId, createdAt])
+  @@index([resource, createdAt])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  title     String
+  body      String   @db.Text
+  readAt    DateTime?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  @@index([userId, readAt])
+}
