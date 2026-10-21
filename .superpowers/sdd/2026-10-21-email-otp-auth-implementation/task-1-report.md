@@ -16,3 +16,20 @@ Verification reported by the implementation worker:
 - `npx.cmd prisma validate`: passing.
 
 Concern: `prisma generate` was blocked by an external `EPERM` unlink in the shared parent `node_modules`; this is an environment/file-lock issue and does not affect schema validation.
+
+## Atomic verification fixes
+
+Status: DONE
+
+- Failed-attempt persistence now uses a conditional atomic increment (`updateMany`) requiring the same challenge identity, an unconsumed and unexpired challenge, and attempts below the challenge maximum. It updates only `attempts`, so a stale failure cannot write `consumedAt: null`.
+- Successful consumption now conditionally updates the matching, unconsumed, unexpired challenge, preventing concurrent valid verifications from both succeeding.
+- The in-memory test store mirrors both conditional transitions.
+- Added regression tests for a stale failed verification racing with consumption and concurrent valid verifications.
+
+Fix verification:
+
+- `npm.cmd test`: 9 passing.
+- `npx.cmd tsc --noEmit`: passing.
+- `$env:DATABASE_URL='postgresql://user:pass@localhost:5432/trinity'; npx.cmd prisma validate`: passing.
+
+Fix commit: `fix: make otp verification atomic`

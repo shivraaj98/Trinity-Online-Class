@@ -97,3 +97,70 @@ test("a resend invalidates the previous challenge", async () => {
   await assert.rejects(() => verifyOtp("known@example.com", oldCode), /Invalid or expired OTP/);
   assert.equal(challenges.filter((challenge) => challenge.consumedAt === null).length, 1);
 });
+
+test("a stale failed verification cannot reopen a challenge consumed concurrently", async () => {
+  const challenges: any[] = [];
+  let releaseFailedUpdate!: () => void;
+  const failedUpdateStarted = new Promise<void>((resolve) => { releaseFailedUpdate = resolve; });
+  let allowFailedUpdate!: () => void;
+  const failedUpdateGate = new Promise<void>((resolve) => { allowFailedUpdate = resolve; });
+
+  __setOtpStoreForTests({
+    challenges,
+    users: [{ id: "user-1", email: "known@example.com", isActive: true }],
+    findLatestChallenge: async (email) => {
+      const challenge = challenges.find((candidate) => candidate.email === email && candidate.consumedAt === null);
+      return challenge ? { ...challenge, expiresAt: new Date(challenge.expiresAt) } : null;
+    },
+    updateChallenge: async (challenge) => {
+      releaseFailedUpdate();
+      await failedUpdateGate;
+      const index = challenges.findIndex((candidate) => candidate.id === challenge.id);
+      challenges[index] = challenge;
+    },
+    updateFailedAttempt: async (challenge) => {
+      releaseFailedUpdate();
+      await failedUpdateGate;
+      const current = challenges.find((candidate) => candidate.id === challenge.id);
+      if (!current || current.consumedAt !== null || current.expiresAt.getTime() <= Date.now() || current.attempts >= current.maxAttempts) return false;
+      current.attempts += 1;
+      return true;
+    },
+    consumeChallenge: async (challenge) => {
+      const current = challenges.find((candidate) => candidate.id === challenge.id);
+      if (!current || current.consumedAt !== null) return false;
+      current.consumedAt = new Date();
+      return true;
+    },
+  });
+
+  await requestOtp("known@example.com");
+  const code = challenges[0].testCode;
+  const failedVerification = verifyOtp("known@example.com", "000000");
+  await failedUpdateStarted;
+  const successfulVerification = verifyOtp("known@example.com", code);
+  await successfulVerification;
+  allowFailedUpdate();
+
+  await assert.rejects(() => failedVerification, /Invalid or expired OTP/);
+  assert.ok(challenges[0].consumedAt instanceof Date);
+});
+
+test("concurrent valid verifications allow only one successful consumption", async () => {
+  const challenges: any[] = [];
+  __setOtpStoreForTests({
+    challenges,
+    users: [{ id: "user-1", email: "known@example.com", isActive: true }],
+  });
+
+  await requestOtp("known@example.com");
+  const code = challenges[0].testCode;
+  const results = await Promise.allSettled([
+    verifyOtp("known@example.com", code),
+    verifyOtp("known@example.com", code),
+  ]);
+
+  assert.equal(results.filter((result) => result.status === "fulfilled").length, 1);
+  assert.equal(results.filter((result) => result.status === "rejected").length, 1);
+  assert.ok(challenges[0].consumedAt instanceof Date);
+});

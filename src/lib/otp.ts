@@ -27,6 +27,7 @@ type OtpStore = {
   updateChallenge?: (challenge: ChallengeRecord) => Promise<void>;
   invalidateChallenges?: (email: string) => Promise<void>;
   replaceChallenge?: (email: string, challenge: ChallengeRecord) => Promise<void>;
+  updateFailedAttempt?: (challenge: ChallengeRecord) => Promise<boolean>;
   consumeChallenge?: (challenge: ChallengeRecord) => Promise<boolean>;
   findUser?: (email: string) => Promise<UserRecord | null>;
 };
@@ -43,12 +44,24 @@ export function __setOtpStoreForTests(store: OtpStore): void {
     const index = store.challenges.findIndex((candidate) => candidate.id === challenge.id);
     store.challenges[index] = challenge;
   };
+  store.updateFailedAttempt ??= async (challenge) => {
+    const current = store.challenges.find((candidate) => candidate.id === challenge.id);
+    if (!current || current.consumedAt !== null || current.expiresAt.getTime() <= Date.now() || current.attempts >= current.maxAttempts) return false;
+    current.attempts += 1;
+    return true;
+  };
   store.invalidateChallenges ??= async (email) => {
     for (const challenge of store.challenges) {
       if (challenge.email === email && challenge.consumedAt === null) challenge.consumedAt = new Date();
     }
   };
   store.findUser ??= async (email) => store.users.find((user) => user.email === email) ?? null;
+  store.consumeChallenge ??= async (challenge) => {
+    const current = store.challenges.find((candidate) => candidate.id === challenge.id);
+    if (!current || current.email !== challenge.email || current.consumedAt !== null || current.expiresAt.getTime() <= Date.now()) return false;
+    current.consumedAt = new Date();
+    return true;
+  };
 }
 
 export function __resetOtpStoreForTests(): void {
@@ -73,7 +86,14 @@ async function productionStore(): Promise<OtpStore> {
       where: { email, consumedAt: null }, orderBy: { createdAt: "desc" },
     }),
     updateChallenge: async (challenge) => { await prisma.loginChallenge.update({ where: { id: challenge.id }, data: { attempts: challenge.attempts, consumedAt: challenge.consumedAt } }); },
-    consumeChallenge: async (challenge) => (await prisma.loginChallenge.updateMany({ where: { id: challenge.id, consumedAt: null }, data: { consumedAt: challenge.consumedAt } })).count === 1,
+    updateFailedAttempt: async (challenge) => (await prisma.loginChallenge.updateMany({
+      where: { id: challenge.id, email: challenge.email, consumedAt: null, expiresAt: { gt: new Date() }, attempts: { lt: challenge.maxAttempts } },
+      data: { attempts: { increment: 1 } },
+    })).count === 1,
+    consumeChallenge: async (challenge) => (await prisma.loginChallenge.updateMany({
+      where: { id: challenge.id, email: challenge.email, consumedAt: null, expiresAt: { gt: new Date() } },
+      data: { consumedAt: new Date() },
+    })).count === 1,
     findUser: async (email) => prisma.user.findUnique({ where: { email }, select: { id: true, email: true, isActive: true } }),
   };
 }
@@ -126,16 +146,17 @@ export async function verifyOtp(email: string, code: string): Promise<{ userId: 
   if (!challenge || challenge.consumedAt || challenge.expiresAt.getTime() <= Date.now() || challenge.attempts >= challenge.maxAttempts) throw invalidOtp();
 
   if (!(await compare(code, challenge.codeHash))) {
-    challenge.attempts = Math.min(challenge.attempts + 1, challenge.maxAttempts);
-    await store.updateChallenge!(challenge);
+    if (!await store.updateFailedAttempt!(challenge)) throw invalidOtp();
     throw invalidOtp();
   }
 
   const user = await store.findUser!(normalizedEmail);
   if (!user || !user.isActive) throw invalidOtp();
-  challenge.consumedAt = new Date();
   if (store.consumeChallenge) {
     if (!await store.consumeChallenge(challenge)) throw invalidOtp();
-  } else await store.updateChallenge!(challenge);
+  } else {
+    challenge.consumedAt = new Date();
+    await store.updateChallenge!(challenge);
+  }
   return { userId: user.id, isNewUser: false };
 }
