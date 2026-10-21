@@ -53,6 +53,21 @@ model User {
   notifications Notification[]
 }
 
+model LoginChallenge {
+  id                String    @id @default(cuid())
+  email             String
+  codeHash          String
+  expiresAt         DateTime
+  attempts          Int       @default(0)
+  maxAttempts       Int       @default(5)
+  consumedAt        DateTime?
+  createdAt         DateTime  @default(now())
+  requestedFromHash String?
+
+  @@index([email, createdAt])
+  @@index([expiresAt])
+}
+
 model Account {
   userId String
   type String
