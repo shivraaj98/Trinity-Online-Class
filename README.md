@@ -21,6 +21,22 @@ Production-oriented online learning platform for students, teachers, admins, and
 
 Google OAuth must allow `http://localhost:3000/api/auth/callback/google` locally and the deployed callback URL in production. Gmail SMTP should use a Google app password, never a personal account password.
 
+## Docker hosting
+
+Docker is the independent hosting path. It does not depend on ChatGPT access.
+
+```bash
+cp .env.example .env
+# Edit .env and set AUTH_SECRET, AUTH_URL, and your Google/email settings.
+docker compose up -d --build
+docker compose exec app npx prisma db push
+docker compose exec app npm run db:seed
+```
+
+Open `http://localhost:3000`. Manage the service with `docker compose ps`, `docker compose logs -f app`, `docker compose restart app`, and `docker compose down`.
+
+For internet access, run the stack on a VPS or home server with a public DNS record, expose only HTTPS through a reverse proxy such as Caddy or Nginx, and keep PostgreSQL private on the Docker network. Back up the database with `docker compose exec postgres pg_dump -U postgres trinity_classes > backups/trinity-$(date +%F).sql`.
+
 The seed accounts are development-only and must be replaced before deployment.
 
 ## Roles

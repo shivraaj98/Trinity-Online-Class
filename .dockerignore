@@ -1,0 +1,9 @@
+node_modules
+.next
+.git
+.env
+.env.local
+dist
+trinity-classes-site.tar.gz
+README.md
+test file.txt
