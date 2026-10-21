@@ -1,0 +1,11 @@
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { auth } from "@/lib/auth";
+import { db } from "@/lib/db";
+
+export default async function LiveAdminPage() {
+  const session = await auth();
+  if (!session || !["ADMIN", "SUPPORT"].includes(session.user.role)) redirect("/dashboard");
+  const [learners, educators, publishedCourses, reviewCount, enrollments, auditEvents] = await Promise.all([db.user.count({ where: { role: "STUDENT", isActive: true } }), db.user.count({ where: { role: "TEACHER", isActive: true } }), db.course.count({ where: { status: "PUBLISHED" } }), db.course.count({ where: { status: "REVIEW" } }), db.enrollment.count({ where: { status: "ACTIVE" } }), db.auditEvent.count({ where: { createdAt: { gte: new Date(Date.now() - 86400000) } } })]);
+  return <main className="admin-shell"><header className="app-header"><Link href="/" className="brand"><span className="brand-mark">T</span><span>Trinity <em>Control</em></span></Link><span className="admin-badge">{session.user.role}</span></header><section className="admin-content"><p className="eyebrow">OPERATIONS / OVERVIEW</p><h1>Make learning<br /><i>run smoothly.</i></h1><div className="metric-grid"><div><span>ACTIVE LEARNERS</span><strong>{learners}</strong><small>Registered students</small></div><div><span>EDUCATORS</span><strong>{educators}</strong><small>Active teachers</small></div><div><span>PUBLISHED COURSES</span><strong>{publishedCourses}</strong><small>{reviewCount} in review</small></div><div><span>ACTIVE ENROLLMENTS</span><strong>{enrollments}</strong><small>Current learners</small></div></div><div className="admin-panels"><section><div className="panel-head"><h2>Review queue</h2><span>{reviewCount} items</span></div><div className="queue-row"><div><strong>{reviewCount ? `${reviewCount} course submissions` : "Nothing needs review"}</strong><small>{reviewCount ? "Open the course review workflow to continue." : "New submissions will appear here."}</small></div></div></section><section className="security-panel"><p className="eyebrow">SECURITY HEALTH</p><h2>Activity is<br /><i>being tracked.</i></h2><ul><li><span>●</span>Role-based access enabled</li><li><span>●</span>{auditEvents} audit events in 24 hours</li><li><span>●</span>Database-backed operations</li></ul></section></div></section></main>;
+}
