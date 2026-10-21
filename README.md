@@ -12,11 +12,14 @@ Production-oriented online learning platform for students, teachers, admins, and
 
 ## Local setup
 
-1. Copy `.env.example` to `.env` and set `DATABASE_URL` and a strong `AUTH_SECRET`.
-2. Install dependencies with `npm install`.
-3. Run `npm run db:push`.
-4. Run `npm run db:seed` for local demo accounts.
-5. Start with `npm run dev`.
+1. Start PostgreSQL with `docker compose up -d postgres`.
+2. Copy `.env.example` to `.env` and set `DATABASE_URL`, a strong `AUTH_SECRET`, and either Google OAuth or Gmail SMTP credentials.
+3. Install dependencies with `npm install`.
+4. Run `npm run db:push`.
+5. Run `npm run db:seed` for local demo accounts.
+6. Start with `npm run dev`.
+
+Google OAuth must allow `http://localhost:3000/api/auth/callback/google` locally and the deployed callback URL in production. Gmail SMTP should use a Google app password, never a personal account password.
 
 The seed accounts are development-only and must be replaced before deployment.
 

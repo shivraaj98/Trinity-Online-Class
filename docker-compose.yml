@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: trinity_classes
+    ports:
+      - "5432:5432"
+    volumes:
+      - trinity-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d trinity_classes"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  trinity-postgres:

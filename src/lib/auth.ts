@@ -1,5 +1,7 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import Google from "next-auth/providers/google";
+import Nodemailer from "next-auth/providers/nodemailer";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { compare } from "bcryptjs";
 import { db } from "./db";
@@ -18,7 +20,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (!user?.passwordHash || !user.isActive || !(await compare(password, user.passwordHash))) return null;
       return { id: user.id, name: user.name, email: user.email, role: user.role };
     }
-  })],
+  }),
+  Google({ clientId: process.env.AUTH_GOOGLE_ID ?? "", clientSecret: process.env.AUTH_GOOGLE_SECRET ?? "" }),
+  ...(process.env.EMAIL_SERVER && process.env.EMAIL_FROM ? [Nodemailer({ server: process.env.EMAIL_SERVER, from: process.env.EMAIL_FROM })] : [])],
   callbacks: {
     async jwt({ token, user }) { if (user) token.role = (user as { role?: "STUDENT" | "TEACHER" | "ADMIN" | "SUPPORT" }).role; return token; },
     async session({ session, token }) { if (session.user) { session.user.id = token.sub ?? ""; session.user.role = token.role as "STUDENT" | "TEACHER" | "ADMIN" | "SUPPORT"; } return session; }
