@@ -230,6 +230,972 @@
 			],
 			"isBackground": false,
 			"problemMatcher": []
+		},
+		{
+			"label": "Commit Gmail database authentication changes",
+			"type": "shell",
+			"command": "git",
+			"args": [
+				"commit",
+				"-m",
+				"Add Gmail and email authentication"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Inspect Dockerfile",
+			"type": "shell",
+			"command": "powershell.exe",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"Get-Content -LiteralPath 'Dockerfile'"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Build Trinity Classes",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"build"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$tsc"
+			]
+		},
+		{
+			"label": "Validate Docker Compose",
+			"type": "shell",
+			"command": "docker",
+			"args": [
+				"compose",
+				"--env-file",
+				".env.example",
+				"config"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Build Docker image",
+			"type": "shell",
+			"command": "docker",
+			"args": [
+				"compose",
+				"--env-file",
+				".env.example",
+				"build"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Review Docker changes",
+			"type": "shell",
+			"command": "git",
+			"args": [
+				"status",
+				"--short"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Inspect pending changes",
+			"type": "shell",
+			"command": "git",
+			"args": [
+				"diff",
+				"--stat",
+				"--",
+				".vscode/tasks.json",
+				"README.md",
+				"docker-compose.yml",
+				"next.config.ts"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Commit Docker hosting setup",
+			"type": "shell",
+			"command": "git",
+			"args": [
+				"add",
+				"README.md",
+				"docker-compose.yml",
+				"next.config.ts",
+				".dockerignore",
+				"Dockerfile",
+				"public/.gitkeep"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Commit Docker production stack",
+			"type": "shell",
+			"command": "git",
+			"args": [
+				"commit",
+				"-m",
+				"Add Docker production hosting stack"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Confirm repository state",
+			"type": "shell",
+			"command": "git",
+			"args": [
+				"status",
+				"--short"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Inspect platform files",
+			"type": "shell",
+			"command": "powershell.exe",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"Get-ChildItem -Recurse -File -Exclude node_modules | Select-Object FullName,Length | Format-Table -AutoSize"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Inspect application routes",
+			"type": "shell",
+			"command": "powershell.exe",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"Get-Content -LiteralPath 'prisma/schema.prisma'; Get-Content -LiteralPath 'src/app/dashboard/page.tsx'; Get-Content -LiteralPath 'src/app/teacher/page.tsx'; Get-Content -LiteralPath 'src/app/admin/page.tsx'; Get-Content -LiteralPath 'src/app/api/courses/route.ts'; Get-Content -LiteralPath 'src/app/api/enrollments/route.ts'"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Inspect auth and seed config",
+			"type": "shell",
+			"command": "powershell.exe",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"Get-Content -LiteralPath 'src/lib/auth.ts'; Get-Content -LiteralPath 'prisma/seed.ts'; Get-Content -LiteralPath 'package.json'; Get-Content -LiteralPath '.env.example'"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Inspect course experience",
+			"type": "shell",
+			"command": "powershell.exe",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"Get-Content -LiteralPath 'src/app/explore/page.tsx'; Get-Content -LiteralPath 'src/app/login/page.tsx'; Get-Content -LiteralPath 'src/app/page.tsx'"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Check Docker Desktop",
+			"type": "shell",
+			"command": "powershell.exe",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"$cmd = Get-Command docker -ErrorAction SilentlyContinue; $procs = Get-Process -Name 'Docker Desktop' -ErrorAction SilentlyContinue; [pscustomobject]@{Docker=$cmd.Source; DockerDesktopRunning=[bool]$procs} | Format-List"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Check Docker engine",
+			"type": "shell",
+			"command": "powershell.exe",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"Start-Sleep -Seconds 10; docker info --format '{{.ServerVersion}}'"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Check Docker engine status",
+			"type": "shell",
+			"command": "docker",
+			"args": [
+				"info",
+				"--format",
+				"{{.ServerVersion}}"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Check Docker engine details",
+			"type": "shell",
+			"command": "docker",
+			"args": [
+				"info"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Inspect Docker environment files",
+			"type": "shell",
+			"command": "powershell.exe",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"Get-Content -LiteralPath 'docker-compose.yml'; Get-Content -LiteralPath '.env.example'"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Validate secured Compose config",
+			"type": "shell",
+			"command": "docker",
+			"args": [
+				"compose",
+				"--env-file",
+				".env.example",
+				"config"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Build and start Trinity Docker stack",
+			"type": "shell",
+			"command": "docker",
+			"args": [
+				"compose",
+				"--env-file",
+				".env.example",
+				"up",
+				"-d",
+				"--build"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Initialize Trinity database",
+			"type": "shell",
+			"command": "docker",
+			"args": [
+				"compose",
+				"--env-file",
+				".env.example",
+				"exec",
+				"app",
+				"npx",
+				"prisma",
+				"db",
+				"push"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Apply Prisma schema",
+			"type": "shell",
+			"command": "docker",
+			"args": [
+				"compose",
+				"--profile",
+				"tools",
+				"--env-file",
+				".env.example",
+				"run",
+				"--rm",
+				"migrate"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Seed Trinity roles and courses",
+			"type": "shell",
+			"command": "docker",
+			"args": [
+				"compose",
+				"--profile",
+				"tools",
+				"--env-file",
+				".env.example",
+				"run",
+				"--rm",
+				"migrate",
+				"npx",
+				"tsx",
+				"prisma/seed.ts"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Read dashboard source line",
+			"type": "shell",
+			"command": "powershell.exe",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"Get-Content -LiteralPath 'src/app/dashboard/page.tsx' | Select-Object -First 4"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Read dashboard function",
+			"type": "shell",
+			"command": "powershell.exe",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"Get-Content -LiteralPath 'src/app/dashboard/page.tsx' | Select-Object -Skip 4 -First 1"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Build updated Trinity app",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"build"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$tsc"
+			]
+		},
+		{
+			"label": "Deploy updated Docker app",
+			"type": "shell",
+			"command": "docker",
+			"args": [
+				"compose",
+				"--env-file",
+				".env.example",
+				"up",
+				"-d",
+				"--build",
+				"app"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Inspect app runtime error",
+			"type": "shell",
+			"command": "docker",
+			"args": [
+				"compose",
+				"--env-file",
+				".env.example",
+				"logs",
+				"--tail",
+				"80",
+				"app"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Check container database settings",
+			"type": "shell",
+			"command": "docker",
+			"args": [
+				"compose",
+				"exec",
+				"app",
+				"node",
+				"-e",
+				"console.log(process.env.DATABASE_URL)"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Check container database URL",
+			"type": "shell",
+			"command": "docker",
+			"args": [
+				"compose",
+				"exec",
+				"app",
+				"printenv",
+				"DATABASE_URL"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Inspect app database URL",
+			"type": "shell",
+			"command": "docker",
+			"args": [
+				"compose",
+				"--env-file",
+				".env.example",
+				"exec",
+				"app",
+				"printenv",
+				"DATABASE_URL"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Synchronize local database password",
+			"type": "shell",
+			"command": "docker",
+			"args": [
+				"compose",
+				"--env-file",
+				".env.example",
+				"exec",
+				"postgres",
+				"psql",
+				"-U",
+				"postgres",
+				"-d",
+				"trinity_classes",
+				"-c",
+				"ALTER USER postgres PASSWORD 'postgres';"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Restart Trinity app container",
+			"type": "shell",
+			"command": "docker",
+			"args": [
+				"compose",
+				"--env-file",
+				".env.example",
+				"restart",
+				"app"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Verify database credentials",
+			"type": "shell",
+			"command": "docker",
+			"args": [
+				"run",
+				"--rm",
+				"--network",
+				"trinityclasses_default",
+				"-e",
+				"PGPASSWORD=postgres",
+				"postgres:16-alpine",
+				"psql",
+				"-h",
+				"postgres",
+				"-U",
+				"postgres",
+				"-d",
+				"trinity_classes",
+				"-c",
+				"select 1"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Set local database password",
+			"type": "shell",
+			"command": "docker compose --env-file .env.example exec -T postgres psql -U postgres -d trinity_classes -c \"ALTER USER postgres PASSWORD 'postgres';\"",
+			"isBackground": false
+		},
+		{
+			"label": "Set local database password safely",
+			"type": "shell",
+			"command": "docker compose --env-file .env.example exec -T postgres psql -U postgres -d trinity_classes -c 'ALTER USER postgres PASSWORD $$postgres$$;'",
+			"isBackground": false
+		},
+		{
+			"label": "Restart app after database fix",
+			"type": "shell",
+			"command": "docker",
+			"args": [
+				"compose",
+				"--env-file",
+				".env.example",
+				"restart",
+				"app"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Build complete Trinity platform",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"build"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$tsc"
+			]
+		},
+		{
+			"label": "Rebuild complete Trinity platform",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"build"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$tsc"
+			]
+		},
+		{
+			"label": "Run complete Trinity Docker platform",
+			"type": "shell",
+			"command": "docker",
+			"args": [
+				"compose",
+				"--env-file",
+				".env.example",
+				"up",
+				"-d",
+				"--build",
+				"app"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Align local database with production template",
+			"type": "shell",
+			"command": "docker compose --env-file .env.example exec -T postgres psql -U postgres -d trinity_classes -c 'ALTER USER postgres PASSWORD $$replace-with-a-strong-database-password$$;'",
+			"isBackground": false
+		},
+		{
+			"label": "Restart final Trinity app",
+			"type": "shell",
+			"command": "docker",
+			"args": [
+				"compose",
+				"--env-file",
+				".env.example",
+				"restart",
+				"app"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Commit complete platform setup",
+			"type": "shell",
+			"command": "git",
+			"args": [
+				"add",
+				"README.md",
+				".env.example",
+				"docker-compose.yml",
+				"src/middleware.ts",
+				"src/app/dashboard-live",
+				"src/app/admin-live",
+				"src/app/courses",
+				"src/app/register",
+				"src/app/profile",
+				"src/app/api/register",
+				"src/app/api/profile"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Commit complete Trinity platform",
+			"type": "shell",
+			"command": "git",
+			"args": [
+				"commit",
+				"-m",
+				"Complete dynamic learning platform flows"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Check final Docker services",
+			"type": "shell",
+			"command": "docker",
+			"args": [
+				"compose",
+				"--env-file",
+				".env.example",
+				"ps"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Check final repository state",
+			"type": "shell",
+			"command": "git",
+			"args": [
+				"status",
+				"--short"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Inspect Docker health probe",
+			"type": "shell",
+			"command": "docker",
+			"args": [
+				"inspect",
+				"--format",
+				"{{json .State.Health}}",
+				"trinityclasses-app-1"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Test container health endpoint",
+			"type": "shell",
+			"command": "docker",
+			"args": [
+				"exec",
+				"trinityclasses-app-1",
+				"wget",
+				"--no-verbose",
+				"--tries=1",
+				"--spider",
+				"http://127.0.0.1:3000/"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Inspect app startup logs",
+			"type": "shell",
+			"command": "docker",
+			"args": [
+				"compose",
+				"--env-file",
+				".env.example",
+				"logs",
+				"--tail",
+				"30",
+				"app"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Fix app container health",
+			"type": "shell",
+			"command": "docker",
+			"args": [
+				"compose",
+				"--env-file",
+				".env.example",
+				"up",
+				"-d",
+				"app"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Verify healthy app container",
+			"type": "shell",
+			"command": "docker",
+			"args": [
+				"compose",
+				"--env-file",
+				".env.example",
+				"ps"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Commit Docker health fix",
+			"type": "shell",
+			"command": "git",
+			"args": [
+				"add",
+				"docker-compose.yml",
+				"README.md"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Commit final Docker health fix",
+			"type": "shell",
+			"command": "git",
+			"args": [
+				"commit",
+				"-m",
+				"Fix Docker app health binding"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Read reverse engineering instructions",
+			"type": "shell",
+			"command": "powershell.exe",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"Get-Content -LiteralPath 'C:\\Users\\user\\.agents\\skills\\reverse-engineer-anything\\SKILL.md'"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Read REA recovery guidance",
+			"type": "shell",
+			"command": "powershell.exe",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"Get-Content -LiteralPath 'C:\\Users\\user\\.agents\\skills\\reverse-engineer-anything\\references\\connection-and-recovery.md'; Get-Content -LiteralPath 'C:\\Users\\user\\.agents\\skills\\reverse-engineer-anything\\references\\runtime-observation.md'"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Check REA availability",
+			"type": "shell",
+			"command": "npx",
+			"args": [
+				"-y",
+				"rea-agents@6.7.0",
+				"doctor",
+				"--client",
+				"codex",
+				"--json"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Inspect REA browser commands",
+			"type": "shell",
+			"command": "npx",
+			"args": [
+				"-y",
+				"rea-agents@6.7.0",
+				"--help"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Inspect REA web inspection schema",
+			"type": "shell",
+			"command": "npx",
+			"args": [
+				"-y",
+				"rea-agents@6.7.0",
+				"inspect-web-page",
+				"--help"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Discover REA browser targets",
+			"type": "shell",
+			"command": "npx",
+			"args": [
+				"-y",
+				"rea-agents@6.7.0",
+				"list-browser-targets",
+				"http://127.0.0.1:9222"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Inspect Trinity visual system",
+			"type": "shell",
+			"command": "powershell.exe",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"Get-Content -LiteralPath 'src/app/globals.css' | Select-Object -First 80; Get-Content -LiteralPath 'src/app/layout.tsx'"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Build Nepali Trinity experience",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"build"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$tsc"
+			]
+		},
+		{
+			"label": "Deploy Nepali Trinity experience",
+			"type": "shell",
+			"command": "docker",
+			"args": [
+				"compose",
+				"--env-file",
+				".env.example",
+				"up",
+				"-d",
+				"--build",
+				"app"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Check Nepali app database access",
+			"type": "shell",
+			"command": "docker",
+			"args": [
+				"compose",
+				"--env-file",
+				".env.example",
+				"logs",
+				"--tail",
+				"30",
+				"app"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Refresh course seed data",
+			"type": "shell",
+			"command": "docker",
+			"args": [
+				"compose",
+				"--profile",
+				"tools",
+				"--env-file",
+				".env.example",
+				"run",
+				"--rm",
+				"migrate",
+				"npx",
+				"tsx",
+				"prisma/seed.ts"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Verify seeded course data",
+			"type": "shell",
+			"command": "docker compose --env-file .env.example exec -T postgres psql -U postgres -d trinity_classes -c 'SELECT COUNT(*) FROM \"Course\";'",
+			"isBackground": false
+		},
+		{
+			"label": "Initialize current production schema",
+			"type": "shell",
+			"command": "docker",
+			"args": [
+				"compose",
+				"--profile",
+				"tools",
+				"--env-file",
+				".env.example",
+				"run",
+				"--rm",
+				"migrate"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Seed current production course",
+			"type": "shell",
+			"command": "docker",
+			"args": [
+				"compose",
+				"--profile",
+				"tools",
+				"--env-file",
+				".env.example",
+				"run",
+				"--rm",
+				"migrate",
+				"npx",
+				"tsx",
+				"prisma/seed.ts"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Verify course count",
+			"type": "shell",
+			"command": "docker compose --env-file .env.example exec -T postgres psql -U postgres -d trinity_classes -c 'SELECT COUNT(*) FROM \"Course\";'",
+			"isBackground": false
+		},
+		{
+			"label": "Inspect current database tables",
+			"type": "shell",
+			"command": "docker compose --env-file .env.example exec -T postgres psql -U postgres -d trinity_classes -c '\\dt'",
+			"isBackground": false
+		},
+		{
+			"label": "Build dynamic Nepali pages",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"build"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$tsc"
+			]
+		},
+		{
+			"label": "Deploy dynamic Nepali pages",
+			"type": "shell",
+			"command": "docker",
+			"args": [
+				"compose",
+				"--env-file",
+				".env.example",
+				"up",
+				"-d",
+				"--build",
+				"app"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Commit Nepali learning experience",
+			"type": "shell",
+			"command": "git",
+			"args": [
+				"add",
+				"src/app/globals.css",
+				"src/app/layout.tsx",
+				"src/middleware.ts",
+				"src/components",
+				"src/app/nepali",
+				"src/app/goals",
+				"src/app/live-classes",
+				"src/app/practice",
+				"src/app/subscriptions",
+				"src/app/study-material",
+				"src/app/educators"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Commit Nepali platform",
+			"type": "shell",
+			"command": "git",
+			"args": [
+				"commit",
+				"-m",
+				"Add Nepali learning platform experience"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Verify final Nepali Docker services",
+			"type": "shell",
+			"command": "docker",
+			"args": [
+				"compose",
+				"--env-file",
+				".env.example",
+				"ps"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Verify final source state",
+			"type": "shell",
+			"command": "git",
+			"args": [
+				"status",
+				"--short"
+			],
+			"isBackground": false
 		}
 	]
 }
