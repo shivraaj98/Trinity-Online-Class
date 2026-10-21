@@ -123,6 +123,68 @@
 			],
 			"isBackground": false,
 			"problemMatcher": []
+		},
+		{
+			"label": "Commit deployable Trinity Classes source",
+			"type": "shell",
+			"command": "git",
+			"args": [
+				"commit",
+				"-m",
+				"Build production learning platform"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Remove generated dependencies from Git index",
+			"type": "shell",
+			"command": "git",
+			"args": [
+				"rm",
+				"-r",
+				"--cached",
+				"node_modules"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Amend clean Trinity Classes commit",
+			"type": "shell",
+			"command": "git",
+			"args": [
+				"commit",
+				"--amend",
+				"--no-edit"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Remove build output from Git index",
+			"type": "shell",
+			"command": "git",
+			"args": [
+				"rm",
+				"-r",
+				"--cached",
+				".next"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Amend clean production source commit",
+			"type": "shell",
+			"command": "git",
+			"args": [
+				"commit",
+				"--amend",
+				"--no-edit"
+			],
+			"isBackground": false,
+			"problemMatcher": []
 		}
 	]
 }
