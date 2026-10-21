@@ -32,6 +32,8 @@ type OtpStore = {
   findUser?: (email: string) => Promise<UserRecord | null>;
 };
 
+export type OtpDelivery = (email: string, code: string) => Promise<void>;
+
 let testStore: OtpStore | undefined;
 
 export function __setOtpStoreForTests(store: OtpStore): void {
@@ -106,6 +108,12 @@ export function normalizeEmail(email: string): string {
   return email.trim().toLowerCase();
 }
 
+export async function hasActiveOtpUser(email: string): Promise<boolean> {
+  const store = await getStore();
+  const user = await store.findUser!(normalizeEmail(email));
+  return Boolean(user?.isActive);
+}
+
 export function isValidOtp(code: string): boolean {
   return /^\d{6}$/.test(code);
 }
@@ -114,7 +122,7 @@ function invalidOtp(): Error {
   return new Error("Invalid or expired OTP");
 }
 
-export async function requestOtp(email: string, requestFingerprint?: string): Promise<{ accepted: true }> {
+export async function requestOtp(email: string, requestFingerprint?: string, deliver?: OtpDelivery): Promise<{ accepted: true }> {
   const normalizedEmail = normalizeEmail(email);
   const store = await getStore();
   const code = String(randomInt(0, 1_000_000)).padStart(OTP_LENGTH, "0");
@@ -135,6 +143,7 @@ export async function requestOtp(email: string, requestFingerprint?: string): Pr
     await store.invalidateChallenges!(normalizedEmail);
     await store.createChallenge!(challenge);
   }
+  if (deliver) await deliver(normalizedEmail, code);
   return { accepted: true };
 }
 
